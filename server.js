@@ -4,7 +4,7 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 
 const {connectDB} =require("./config/db")
-
+const categoryRoutes = require("./routes/categoryRoutes") 
 
 dotenv.config()
 const app = express();
@@ -29,3 +29,6 @@ app.get('/', (req, res)=> {
 })
 
 app.use('/api/v1/auth', require("./routes/userRoutes") );
+
+//category
+app.use('/api/v1/category', categoryRoutes )
