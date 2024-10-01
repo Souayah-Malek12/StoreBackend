@@ -1,21 +1,16 @@
 const express = require("express")
-const {createUser, loginUser, logoutUser, getAllUsers, getUser, updateProfil, deleteUser, getUserById, updatedUserById} = require("../controllers/userControllers")
-const {authMiddleware, authorizeAdmin}= require("../middlewares/authMiddleware")
+const {registreController, loginController, testController} = require("../controllers/userControllers")
+const {requireSignIn, isAdmin} = require("../middlewares/authMiddleware")
 
 const router = express.Router();
 
-router.post('/', authMiddleware, authorizeAdmin ,createUser)
-router.get('/', authMiddleware, authorizeAdmin, getAllUsers)
-router.delete('/:id', authMiddleware, authorizeAdmin, deleteUser)
-router.get('/:id', authMiddleware, authorizeAdmin, getUserById)
-router.get('/:id', authMiddleware, authorizeAdmin, getUserById)
-router.patch('/:id', authMiddleware, authorizeAdmin, updatedUserById)
+router.post('/registre' ,registreController)
+router.post('/login',loginController )
 
-router.get('/profil', authMiddleware, getUser)
-router.patch('/update', authMiddleware ,updateProfil)
+router.get("/user-auth", requireSignIn, (req, res) => {res.status(200).send({success : true})} ) 
 
-router.post('/authen',loginUser )
-router.post('/logout', logoutUser)
+router.get("/admin-auth", requireSignIn, isAdmin, (req, res)=> { res.status(200).send({success : true} ) })  
 
+router.get("/test", requireSignIn , isAdmin ,testController)
 
 module.exports = router;

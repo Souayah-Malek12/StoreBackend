@@ -1,47 +1,28 @@
 const jwt =require("jsonwebtoken")
 const userModel = require("../models/userModel")
 
-const authMiddleware = async(req, res, next)=> {
-   try{
-    const token = req.cookies.jwt;
-
-    if(!token){
-        return res.status(401).send({
-            success: false,
-            message: 'Token is missing'
-        });
-    }
-
-    const decode = jwt.verify( token , process.env.SECRET)
-    const userExist = await userModel.findById(decode.id)
-
-    if (!userExist) {
-        return res.status(401).send({
-            success: false,
-            message: 'User not found'
-        });
-    }
-    req.user = userExist
-    next();
+ const requireSignIn = (req, res, next)=> {
+    try{    
+        const decode = jwt.verify(req.headers.authorization, process.env.SECRET);
+        req.user = decode;
+        next();
     }catch(error){
-        return res.status(500).send({
-            success: false,
-            message: 'Token is invalid or expired',
-            error
-        })
+        console.log(error)
     }
 }
 
-const authorizeAdmin = async(req, res, next)=> {
+const isAdmin = async(req, res, next)=> {
     try{
-        if(req.user && req.user.isAdmin===true){
-            next();
-        }else {
-            return res.status(403).send({
+        const user = await userModel.findById(req.user.id)
+        if(!user || user.role !== 1){
+            return res.status(401).send({
                 success: false,
-                message: "Access denied Only Admin"
-            })
+                message: "UnAuthorized Access",
+              }); 
         }
+
+            next();
+        
     }catch(error){
         return res.status(500).send({
             success: false,
@@ -50,4 +31,7 @@ const authorizeAdmin = async(req, res, next)=> {
     }
 }
 
-module.exports =  {authMiddleware, authorizeAdmin }
+
+
+
+module.exports = {requireSignIn, isAdmin}
