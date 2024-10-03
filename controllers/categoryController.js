@@ -118,4 +118,49 @@ const getAllCategoryController = async(req, res)=>{
     }
 }
 
-module.exports = { createCategoryController, updateCategoryController, find, getAllCategoryController }
+const getSingleCategoryController = async(req, res)=> {  
+    try{ 
+        const singleCategory = await categoryModel.findOne({slug: req.params.slug})
+        return res.status(200).send({
+            success: true,
+            message: "Category",
+            singleCategory
+
+        })
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in get ALL categorys api",
+            error
+        });
+    }
+    
+}
+
+const deleteCategoryController = async(req, res)=> {
+    try{
+        const {id} = req.params
+        const categoryExist = await categoryModel.findById(id)
+        if(!categoryExist){
+            return res.status(404).send({
+                success: false,
+                message: "Category Not  found",
+                
+            })
+        }
+        await categoryModel.findByIdAndDelete(id)
+        return res.status(200).send({
+            success: true,
+            message: "Category Deleted Successfully",
+            
+        })
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in delete category api",
+            error
+        });
+    }
+}
+
+module.exports = { createCategoryController, updateCategoryController, find, getAllCategoryController, getSingleCategoryController , deleteCategoryController }

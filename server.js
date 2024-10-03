@@ -6,6 +6,8 @@ const dotenv = require("dotenv")
 const {connectDB} =require("./config/db")
 const categoryRoutes = require("./routes/categoryRoutes") 
 
+
+
 dotenv.config()
 const app = express();
 
@@ -24,6 +26,8 @@ app.listen(PORT ,
 
 connectDB();
 
+    
+
 app.get('/', (req, res)=> {
     res.send('API is running');
 })
@@ -32,3 +36,6 @@ app.use('/api/v1/auth', require("./routes/userRoutes") );
 
 //category
 app.use('/api/v1/category', categoryRoutes )
+
+// 
+app.use('/api/v1/product', require('./routes/productRoutes'))
