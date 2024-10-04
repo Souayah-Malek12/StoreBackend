@@ -144,6 +144,7 @@ const updateProductController= async(req, res)=> {
         if(quantity) updatedProduct.quantity = quantity 
         if(photo) updatedProduct.photo = photo 
 
+        await updatedProduct.save()
 
         return res.status(200).send({
             success : true,

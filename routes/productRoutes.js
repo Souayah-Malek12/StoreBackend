@@ -8,6 +8,6 @@ router.post("/create-product", requireSignIn, isAdmin, createProductController)
 router.get("/getProducts", requireSignIn, getAllProductsController)
 router.get("/getOneproduct/:slug", requireSignIn, getSingleProductApi)
 router.delete('/delete/:id', requireSignIn, isAdmin, deleteProductController )
-router.patch('/updateProduct/:id' , requireSignIn, isAdmin, updateProductController)
+router.put('/updateProduct/:id' , requireSignIn, isAdmin, updateProductController)
 
 module.exports = router;
