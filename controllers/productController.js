@@ -59,7 +59,14 @@ const createProductController = async (req, res) => {
         return res.status(201).send({
             success: true,
             message: "Product created successfully",
-            product
+            product : {
+                name,
+                description,
+                price,
+                category,
+                quantity,
+                photo
+            }
         });
 
     } catch (error) {
@@ -73,7 +80,7 @@ const createProductController = async (req, res) => {
 
 const getAllProductsController = async(req, res)=> {
     try{
-        const products = await productModel.find({}).select(( "-photo" )).populate("category").limit(12).sort({ createdAt : -1})
+        const products = await productModel.find({}).populate("category").limit(12).sort({ createdAt : -1})
         res.status(200).send({
             success : true,
             message : "All Products",
