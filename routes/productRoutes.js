@@ -1,12 +1,15 @@
 const express = require("express");
 const { requireSignIn, isAdmin } = require("../middlewares/authMiddleware");
-const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController } = require("../controllers/productController");
+const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController } = require("../controllers/productController");
 
 const router = express.Router();
 
 router.post("/create-product", requireSignIn, isAdmin, createProductController)
-router.get("/getProducts", requireSignIn, getAllProductsController)
-router.get("/getOneproduct/:slug", requireSignIn, getSingleProductApi)
+router.get("/getProducts", getAllProductsController)
+router.post("/filterProducts", filterProductController)
+
+
+router.get("/getOneproduct/:slug",  getSingleProductApi)
 router.delete('/delete/:id', requireSignIn, isAdmin, deleteProductController )
 router.put('/updateProduct/:id' , requireSignIn, isAdmin, updateProductController)
 

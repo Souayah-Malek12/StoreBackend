@@ -6,9 +6,9 @@ const router = express.Router()
 
 router.post("/create-category", requireSignIn, isAdmin, createCategoryController)
 router.put("/update-category/:id", requireSignIn, isAdmin, updateCategoryController)
-router.get("/find/:id", requireSignIn, isAdmin, find)
-router.get("/findAll", requireSignIn, isAdmin, getAllCategoryController)
-router.get("/findSingle/:slug", requireSignIn, isAdmin, getSingleCategoryController)
+router.get("/find/:id",   find)
+router.get("/findAll",  getAllCategoryController)
+router.get("/findSingle/:slug", getSingleCategoryController)
 router.delete("/delete/:id", requireSignIn, isAdmin, deleteCategoryController)
 
 module.exports = router;

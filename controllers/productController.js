@@ -167,4 +167,26 @@ const updateProductController= async(req, res)=> {
     }
 }
 
-module.exports = {createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController}
+const filterProductController = async(req, res)=> {
+        try{
+                const {checked , radio } = req.body;
+                const alt = {}
+
+                if(checked.length>0) alt.category = checked;
+                if(radio.length) alt.price = {$gt : radio[0], $lt : radio[1]}
+                const products = await productModel.find(alt)
+
+                return res.status(200).send({
+                    success : true,
+                    products
+                })
+        }catch(error){
+            return res.status(500).send({
+                success: false,
+                message: "Error in filter product API",
+                error: error.message 
+            });
+        }
+}
+
+module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController}
