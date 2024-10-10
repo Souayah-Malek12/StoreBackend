@@ -189,4 +189,42 @@ const filterProductController = async(req, res)=> {
         }
 }
 
-module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController}
+const productCountController = async(req, res)=> {
+    try{
+        const total = await productModel.find({}).estimatedDocumentCount()
+        return res.status(200).send({
+            success: true,
+            total
+        })
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in counting  products API",
+            error: error.message 
+        });
+    }
+}
+
+const productListController =async(req, res)=> {
+    try{
+        const perPage = 3   
+        const page = req.params.page ? req.params.page : 1;
+        const products = await productModel
+        .find({})
+        .skip((page-1) * perPage)
+        .limit(perPage)
+        .sort({createdAt: -1})
+        return res.status(200).send({
+            success : true,
+            products
+        })
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in Listing  products API",
+            error: error.message 
+        });
+    }
+}
+
+module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController}
