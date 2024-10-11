@@ -227,4 +227,23 @@ const productListController =async(req, res)=> {
     }
 }
 
-module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController}
+const searchProductController = async(req, res)=> {
+    try{
+        const {keyword} = req.params
+        const results = await productModel.find({
+            $or: [
+            {name : {$regex : keyword, $options: "i"}},
+            {descritpion : {$regex : keyword, $options : "i"}}
+            ]
+        }
+        )
+        res.json(results)
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in searching  product API",
+            error: error.message 
+        });
+    }
+}
+module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController, searchProductController}

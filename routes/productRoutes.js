@@ -1,6 +1,6 @@
 const express = require("express");
 const { requireSignIn, isAdmin } = require("../middlewares/authMiddleware");
-const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController } = require("../controllers/productController");
+const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController } = require("../controllers/productController");
 
 const router = express.Router();
 
@@ -9,6 +9,8 @@ router.get("/getProducts", getAllProductsController)
 router.post("/filterProducts", filterProductController)
 router.get("/productCount", productCountController)
 router.get("/productList/:page", productListController)
+router.get("/search/:keyword", searchProductController)
+
 
 router.get("/getOneproduct/:slug",  getSingleProductApi)
 router.delete('/delete/:id', requireSignIn, isAdmin, deleteProductController )
