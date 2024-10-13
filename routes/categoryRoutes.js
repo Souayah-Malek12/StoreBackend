@@ -5,7 +5,7 @@ const { createCategoryController, updateCategoryController, find, getAllCategory
 const router = express.Router()
 
 router.post("/create-category", requireSignIn, isAdmin, createCategoryController)
-router.put("/update-category/:id", requireSignIn, isAdmin, updateCategoryController)
+router.put("/update-category/:id", updateCategoryController)
 router.get("/find/:id",   find)
 router.get("/findAll",  getAllCategoryController)
 router.get("/findSingle/:slug", getSingleCategoryController)

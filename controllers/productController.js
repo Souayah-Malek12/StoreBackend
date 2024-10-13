@@ -1,5 +1,6 @@
 const { default: slugify } = require('slugify');
 const productModel = require('../models/productModel');
+const categoryModel = require("../models/categoryModel")
 
 
 const createProductController = async (req, res) => {
@@ -246,4 +247,56 @@ const searchProductController = async(req, res)=> {
         });
     }
 }
-module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController, searchProductController}
+
+const relatedSearchController = async (req, res) => {
+    try {
+        const { pid, cid } = req.params;
+        const relatedProds = await productModel.find({
+            category: cid,
+            _id: { $ne: pid }
+        })
+        .limit(3)
+        .populate("category");
+        
+        res.status(200).send({
+            success: true,
+            relatedProds
+        });
+    } catch (error) {
+        console.error("Error fetching related products:", error); // Log the full error
+        return res.status(500).send({
+            success: false,
+            message: "Error in searching related products API",
+            error: error.message 
+        });
+    }
+};
+
+const getProductByCategory = async(req, res)=> {
+    try{
+        const {slug} = req.params;
+        const category = await categoryModel.findOne({slug});
+
+        if (!category) {
+            return res.status(404).json({
+              success: false,
+              message: 'Category not found',
+            });
+          }
+
+        const products = await productModel.find({ category: category._id })
+
+        res.status(200).send({
+            success: true,
+            products
+        });
+    }catch(error){
+        return res.status(500).send({
+            success: false,
+            message: "Error in searching category products API",
+            error: error.message 
+        });
+    }
+}
+
+module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController, searchProductController, relatedSearchController, getProductByCategory}

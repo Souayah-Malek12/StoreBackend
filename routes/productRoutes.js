@@ -1,6 +1,6 @@
 const express = require("express");
 const { requireSignIn, isAdmin } = require("../middlewares/authMiddleware");
-const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController } = require("../controllers/productController");
+const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController, relatedSearchController, getProductByCategory } = require("../controllers/productController");
 
 const router = express.Router();
 
@@ -10,6 +10,10 @@ router.post("/filterProducts", filterProductController)
 router.get("/productCount", productCountController)
 router.get("/productList/:page", productListController)
 router.get("/search/:keyword", searchProductController)
+router.get("/relatedProducts/:pid/:cid", relatedSearchController)
+router.get("/categoryProduct/:slug", getProductByCategory)
+
+
 
 
 router.get("/getOneproduct/:slug",  getSingleProductApi)
