@@ -160,6 +160,7 @@ const updateProductController= async(req, res)=> {
             updatedProduct
         })
     }catch(error){
+        console.log(error)
         return res.status(500).send({
             success: false,
             message: "Error in update product API",

@@ -157,10 +157,69 @@ try{
 }
 
 
+const updateProfilController = async(req, res)=> {
+    try{
+        
+        const { name, email ,NewPassword,  phone, address } = req.body;
+
+        const userExist = await userModel.findById(req.user.id);
+        console.log(req.user.id)
+
+        if (!userExist) {
+            return res.status(404).send({
+                success: false,
+                message: "User not found"
+            });
+        }
+        if(NewPassword ){
+
+            if (NewPassword.length < 6) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Password must be at least 6 characters long"
+                });
+            }
+            
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(NewPassword, salt);
+               userExist.password  = hashedPassword;
+
+            
+            
+        }
+
+
+        if(name) userExist.name  = name;
+        if(email) userExist.email  = email;
+        if(phone) userExist.phone  = phone;
+        if(address) userExist.address  = address;
+
+        await userExist.save();
+        return res.status(200).send({
+            success : true,
+            message: "Profil  updated Successfully",
+            user : 
+            {
+                name, 
+                email,
+                phone,
+                address
+            }
+        })
+
+        
+    }catch(error){
+        return  res.status(500).send({
+            success: false,
+            message :" Error in Update profil  Api",
+            error
+
+        });
+    }
+}
 
 
 
 
 
-
-module.exports = {registreController, loginController, testController}
+module.exports = {registreController, loginController, testController, updateProfilController}
