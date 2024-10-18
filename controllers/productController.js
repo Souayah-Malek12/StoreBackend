@@ -1,7 +1,70 @@
 const { default: slugify } = require('slugify');
 const productModel = require('../models/productModel');
 const categoryModel = require("../models/categoryModel")
+const orderModel = require("../models/orderModel")
 
+
+var gateway = new braintree.BraintreeGateway({
+    environment: braintree.Environment.Sandbox,
+    merchantId: process.env.BRAINTREE_MEMerchantID ,
+    publicKey: process.env.meta.BRAINTREE_Public_Key ,
+    privateKey: process.env.meta.BRAINTREE_Private_Key,
+  });
+
+const braintreeTokenController = async(req, res)=>{
+    try{
+       gateway.clientToken.generate({}, function (err, response){
+            if(err){
+                res.status(500).send(err)
+            }else{
+                res.send(response)
+            }
+       })
+    }catch(error){
+        console.log(error);
+    }
+}
+const braintreePaymentController = async (req, res) => {
+    try {
+        const { cart, nonce } = req.body;
+        let total = 0;
+
+        // Use forEach to calculate total instead of map
+        cart.forEach((c) => {
+            total += c.price; // Ensure 'c' is used correctly
+        });
+
+        // Perform the transaction
+        gateway.sale({
+            amount: total, // Keep total as is
+            paymentMethodNonce: nonce, // Corrected typo
+            options: {
+                submitForSettlement: true, // Corrected typo
+            }
+        }, async (err, result) => {
+            if (err) {
+                console.error(err); // Log the error
+                return res.status(500).send({ error: 'Transaction failed' });
+            }
+
+            if (result.success) {
+                // Await the order save to ensure it completes
+                await new orderModel({
+                    products: cart,
+                    payment: result,
+                    buyer: req.user.id,
+                }).save();
+
+                return res.json({ ok: true });
+            } else {
+                return res.status(500).send({ error: 'Transaction was not successful' });
+            }
+        });
+    } catch (error) {
+        console.error(error); // Log any unexpected errors
+        res.status(500).send({ error: 'Internal Server Error' });
+    }
+};
 
 const createProductController = async (req, res) => {
     try {
@@ -300,4 +363,7 @@ const getProductByCategory = async(req, res)=> {
     }
 }
 
-module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController, productListController, searchProductController, relatedSearchController, getProductByCategory}
+module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController,
+     productListController, searchProductController, relatedSearchController, getProductByCategory
+    ,braintreeTokenController, braintreePaymentController
+}
