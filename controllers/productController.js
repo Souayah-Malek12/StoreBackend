@@ -1,27 +1,83 @@
 const { default: slugify } = require('slugify');
+
 const productModel = require('../models/productModel');
 const categoryModel = require("../models/categoryModel")
 const orderModel = require("../models/orderModel")
 
+const braintree = require('braintree');
+
+const dotenv = require("dotenv");
+const mongoose = require("mongoose")
+dotenv.config();
 
 var gateway = new braintree.BraintreeGateway({
     environment: braintree.Environment.Sandbox,
     merchantId: process.env.BRAINTREE_MEMerchantID ,
-    publicKey: process.env.meta.BRAINTREE_Public_Key ,
-    privateKey: process.env.meta.BRAINTREE_Private_Key,
+    publicKey: process.env.BRAINTREE_Public_Key ,
+    privateKey: process.env.BRAINTREE_Private_Key,
   });
+
+
+  const payOnDelivery = async(req, res)=>{
+    try{
+        const  {cart} = req.body;
+        let total = 0;
+
+        if (!cart || cart.length === 0) {
+            return res.status(400).send({
+                success: false,
+                message: 'Cart is empty',
+            });
+        }
+
+
+        cart.forEach((c)=>{
+            total+=c.price * c.quantity;
+        })
+        const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
+
+        const requestedOrder = await orderModel.create({
+            products : productIds,
+            payment : total,
+            buyer : req.user.id
+        })
+        return res.status(201).send({
+            success : true ,
+            message : 'order passed successfully',
+            requestedOrder
+        })
+    }catch(error){
+        return res.status(500).json({
+            success: false,
+            message: "Error in payOnDelivery Api",
+            error: error.message,
+          });
+    }
+  }
 
 const braintreeTokenController = async(req, res)=>{
     try{
        gateway.clientToken.generate({}, function (err, response){
             if(err){
-                res.status(500).send(err)
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to generate client token",
+                    error: err.message || err, // Ensuring a proper error message
+                  });
             }else{
-                res.send(response)
+                res.status(200).send({
+                    success: true,
+                    message: "toekn created Successfully",
+                    response
+                })
             }
        })
     }catch(error){
-        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "An unexpected error occurred",
+            error: error.message,
+          });
     }
 }
 const braintreePaymentController = async (req, res) => {
@@ -365,5 +421,5 @@ const getProductByCategory = async(req, res)=> {
 
 module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController,
      productListController, searchProductController, relatedSearchController, getProductByCategory
-    ,braintreeTokenController, braintreePaymentController
+    ,braintreeTokenController, braintreePaymentController , payOnDelivery
 }
