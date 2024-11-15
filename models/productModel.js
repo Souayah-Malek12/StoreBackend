@@ -22,6 +22,13 @@ const productModel = mongoose.Schema({
         ref : "category"
 
     }, 
+    details : [
+        {
+        color :String,
+        size :String,
+        quantities: Number
+        }
+    ],
     quantity : {
         type: Number,
         required : true

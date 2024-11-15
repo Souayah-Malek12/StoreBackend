@@ -7,7 +7,8 @@ const orderModel = require("../models/orderModel")
 const braintree = require('braintree');
 
 const dotenv = require("dotenv");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const userModel = require('../models/userModel');
 dotenv.config();
 
 var gateway = new braintree.BraintreeGateway({
@@ -35,11 +36,14 @@ var gateway = new braintree.BraintreeGateway({
             total+=c.price * c.quantity;
         })
         const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
+        const user = await userModel.findById( req.user.id );
+        bPhone =user.phone;
 
         const requestedOrder = await orderModel.create({
             products : productIds,
             payment : total,
-            buyer : req.user.id
+            buyer : req.user.id,
+            buyerPhone : bPhone
         })
         return res.status(201).send({
             success : true ,
@@ -124,7 +128,13 @@ const braintreePaymentController = async (req, res) => {
 
 const createProductController = async (req, res) => {
     try {
-        const { name, description, price, category, quantity, photo } = req.body;
+        
+
+        const { name, description, price, category,  quantity, photo ,details } = req.body;
+
+
+        console.log("Request body:", req.body);
+
 
         // Validate required fields
         if (!name) {
@@ -165,12 +175,19 @@ const createProductController = async (req, res) => {
                 message: "photo is required "
             });
         }
+        if (!details ) {
+            return res.status(401).send({
+                success: false,
+                message: "details is required "
+            });
+        }
            
+        const slug = slugify(name); // Ensure slugify is imported at the top of your file
 
         // Create new product
         const product = await productModel.create({
-            name, description, price , category, quantity, photo,
-            slug: slugify(name),
+            name, description, price , category, quantity, photo, details,
+            slug,
         });
 
         // Save product to the database
@@ -185,16 +202,20 @@ const createProductController = async (req, res) => {
                 price,
                 category,
                 quantity,
-                photo
+                photo, 
+                details,
+                slug
             }
         });
 
     } catch (error) {
+
         return res.status(500).send({
             success: false,
             message: "Error in create product API",
             error: error.message // Return error message for better debugging
         });
+       
     }
 };
 
@@ -251,15 +272,17 @@ const deleteProductController = async(req, res)=> {
     }
 }
 
+
 const updateProductController= async(req, res)=> {
     try{
         const {id} = req.params;
-        const {name, description, price, category, quantity, photo} = req.body; 
+        const { name, description, price, category,  quantity, photo ,Newdetails } = req.body; 
+        console.log(Newdetails)
         const updatedProduct = await productModel.findById(id)
 
         if (!updatedProduct) {
             return res.status(404).send({
-              success: false,
+              success: false,   
               message: "Product not found",
             });
           }
@@ -270,6 +293,19 @@ const updateProductController= async(req, res)=> {
         if(category) updatedProduct.category = category 
         if(quantity) updatedProduct.quantity = quantity 
         if(photo) updatedProduct.photo = photo 
+        
+        if (Newdetails) {
+          
+            Newdetails.forEach(detail => {
+                updatedProduct.details.push({
+                  color: detail.color,
+                  size: detail.size,
+                  quantities: detail.quantities
+                });
+              });
+            
+            
+          } 
 
         await updatedProduct.save()
 
@@ -421,5 +457,5 @@ const getProductByCategory = async(req, res)=> {
 
 module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController,
      productListController, searchProductController, relatedSearchController, getProductByCategory
-    ,braintreeTokenController, braintreePaymentController , payOnDelivery
+    ,braintreeTokenController, braintreePaymentController , payOnDelivery 
 }

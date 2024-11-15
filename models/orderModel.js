@@ -11,6 +11,9 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },
+    buyerPhone : {
+        type : Number
+    },
     status : {
         type: String,
         default : "Not Process",
