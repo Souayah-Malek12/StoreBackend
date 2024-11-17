@@ -1,6 +1,7 @@
 const express = require("express");
 const { requireSignIn, isAdmin } = require("../middlewares/authMiddleware");
-const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController, relatedSearchController, getProductByCategory, braintreeTokenController, braintreePaymentController, payOnDelivery } = require("../controllers/productController");
+const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController, relatedSearchController, 
+    getProductByCategory, braintreeTokenController, braintreePaymentController, payOnDelivery, passagerCommand } = require("../controllers/productController");
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.get('/braintree/token', braintreeTokenController)
 router.post('/braintree/payment', requireSignIn, braintreePaymentController)
 
 router.post('/payOnDeliver', requireSignIn, payOnDelivery)
+router.post('/passagerCommand', passagerCommand)
 
 router.get("/getOneproduct/:slug",  getSingleProductApi)
 router.delete('/delete/:id', requireSignIn, isAdmin, deleteProductController )

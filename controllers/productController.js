@@ -30,20 +30,18 @@ var gateway = new braintree.BraintreeGateway({
                 message: 'Cart is empty',
             });
         }
-
-
         cart.forEach((c)=>{
             total+=c.price * c.quantity;
         })
         const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
         const user = await userModel.findById( req.user.id );
-        bPhone =user.phone;
-
         const requestedOrder = await orderModel.create({
             products : productIds,
             payment : total,
             buyer : req.user.id,
-            buyerPhone : bPhone
+            buyerString : user.name,
+            buyerPhone : user.phone,
+            addresse : user.address
         })
         return res.status(201).send({
             success : true ,
@@ -55,6 +53,36 @@ var gateway = new braintree.BraintreeGateway({
             success: false,
             message: "Error in payOnDelivery Api",
             error: error.message,
+          });
+    }
+  }
+  const passagerCommand = async(req, res)=>{
+    try{
+        const {name , tel , adr , cart} = req.body;
+        
+        let total = 0;
+        cart.forEach((c)=>{
+            total+= c.price * c.quantity;
+        });
+        const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
+
+        const passagerOrder = await orderModel.create({
+            products : productIds,
+            payment : total,
+            buyerString : name,
+            buyerPhone : tel,
+            addresse : adr
+        })
+        return res.status(201).send({
+            success : true ,
+            message : 'passager order  passed successfully',
+            passagerOrder
+        })
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "Error in commande passager Api",
+            error: err.message,
           });
     }
   }
@@ -457,5 +485,5 @@ const getProductByCategory = async(req, res)=> {
 
 module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController,
      productListController, searchProductController, relatedSearchController, getProductByCategory
-    ,braintreeTokenController, braintreePaymentController , payOnDelivery 
+    ,braintreeTokenController, braintreePaymentController , payOnDelivery , passagerCommand
 }

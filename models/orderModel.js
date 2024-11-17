@@ -11,9 +11,17 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },
+    buyerString: {
+        type: String // String version of the buyer
+      },
+      addresse : {
+        type: String  
+      }
+      ,
     buyerPhone : {
         type : Number
     },
+   
     status : {
         type: String,
         default : "Not Process",
