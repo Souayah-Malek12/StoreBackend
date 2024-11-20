@@ -218,8 +218,26 @@ const updateProfilController = async(req, res)=> {
     }
 }
 
+const getUsers = async (req, res) => {
+    try {
+      const users = await userModel.find({});
+      return res.status(200).send({
+        success: true,
+        message: "Users List",
+        users,
+      });
+    } catch (err) {
+      return res.status(500).send({
+        success: false,
+        message: "Error in getting users list API",
+        error: err.message,  // Use err.message for a detailed error message
+      });
+    }
+  };
+  
 
 
 
 
-module.exports = {registreController, loginController, testController, updateProfilController}
+
+module.exports = {registreController, loginController, testController, updateProfilController, getUsers}

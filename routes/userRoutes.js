@@ -1,7 +1,7 @@
 const express = require("express")
-const {registreController, loginController, testController, updateProfilController} = require("../controllers/userControllers")
+const {registreController, loginController, testController, updateProfilController, getUsers} = require("../controllers/userControllers")
 const {requireSignIn, isAdmin} = require("../middlewares/authMiddleware");
-const {  getOrdersController } = require("../controllers/orderController");
+const {  getOrdersController, getAllOrdersController } = require("../controllers/orderController");
 
 const router = express.Router();
 
@@ -16,5 +16,9 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res)=> { res.status(200)
 router.get("/test", requireSignIn , isAdmin ,testController)
 
 router.get('/orders', requireSignIn, getOrdersController)
+
+router.get('/AllOrders', requireSignIn,isAdmin, getAllOrdersController)
+
+router.get('/users', requireSignIn, isAdmin, getUsers)
 
 module.exports = router;
