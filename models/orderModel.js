@@ -3,17 +3,23 @@ const mongoose  = require("mongoose")
 
 const orderSchema = new mongoose.Schema({
     products: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'product'
+        name: {
+            type: String 
+        },
+        color : {
+            type: String,
+        },
+        size : {
+            type: String
+        }
+       
     }],
     payment : {},
     buyer : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users"
+        type: String,
+        
     },
-    buyerString: {
-        type: String // String version of the buyer
-      },
+   
       addresse : {
         type: String  
       }

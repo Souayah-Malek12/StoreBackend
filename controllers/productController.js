@@ -19,59 +19,26 @@ var gateway = new braintree.BraintreeGateway({
   });
 
 
-  const payOnDelivery = async(req, res)=>{
-    try{
-        const  {cart} = req.body;
-        let total = 0;
-
-        if (!cart || cart.length === 0) {
-            return res.status(400).send({
-                success: false,
-                message: 'Cart is empty',
-            });
-        }
-        cart.forEach((c)=>{
-            total+=c.price * c.quantity;
-        })
-        const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
-        const user = await userModel.findById( req.user.id );
-        const requestedOrder = await orderModel.create({
-            products : productIds,
-            payment : total,
-            buyer : req.user.id,
-            buyerString : user.name,
-            buyerPhone : user.phone,
-            addresse : user.address
-        })
-        return res.status(201).send({
-            success : true ,
-            message : 'order passed successfully',
-            requestedOrder
-        })
-    }catch(error){
-        return res.status(500).json({
-            success: false,
-            message: "Error in payOnDelivery Api",
-            error: error.message,
-          });
-    }
-  }
+  
   const passagerCommand = async(req, res)=>{
     try{
-        const {name , tel , adr , cart} = req.body;
+        const {name , tel , adr , cart,total} = req.body;
         
-        let total = 0;
-        cart.forEach((c)=>{
-            total+= c.price * c.quantity;
-        });
-        const productIds = cart.map((p) => new mongoose.Types.ObjectId(p.id));
+       
+        const productDetails = cart?.map((prod) => {
+            return prod?.details?.map((d)=>{
+                return { name : prod.name ,  color : d.color, size :  d.size}
+            })
+            }).flat();
+       
 
         const passagerOrder = await orderModel.create({
-            products : productIds,
+            products : productDetails,
             payment : total,
-            buyerString : name,
+            buyer : name,
+            addresse : adr,
             buyerPhone : tel,
-            addresse : adr
+            
         })
         return res.status(201).send({
             success : true ,
@@ -485,5 +452,5 @@ const getProductByCategory = async(req, res)=> {
 
 module.exports = {filterProductController ,createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, productCountController,
      productListController, searchProductController, relatedSearchController, getProductByCategory
-    ,braintreeTokenController, braintreePaymentController , payOnDelivery , passagerCommand
+    ,braintreeTokenController, braintreePaymentController  , passagerCommand
 }

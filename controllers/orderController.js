@@ -39,7 +39,7 @@ const getAllOrdersController = async(req, res)=>{
     try{
         const orders = await orderModel.find({ }).populate("buyer").populate("products" );
        
-        
+        console.log(orders)
         if(!orders || orders.length === 0 ){
             return res.status(404).send({
                 success : false,

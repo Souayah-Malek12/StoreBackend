@@ -20,7 +20,6 @@ router.get('/braintree/token', braintreeTokenController)
 //payments 
 router.post('/braintree/payment', requireSignIn, braintreePaymentController)
 
-router.post('/payOnDeliver', requireSignIn, payOnDelivery)
 router.post('/passagerCommand', passagerCommand)
 
 router.get("/getOneproduct/:slug",  getSingleProductApi)
