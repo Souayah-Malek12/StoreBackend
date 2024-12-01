@@ -15,7 +15,9 @@ router.get("/admin-auth", requireSignIn, isAdmin, (req, res)=> { res.status(200)
 
 router.get("/test", requireSignIn , isAdmin ,testController)
 
-router.get('/orders', requireSignIn, getOrdersController)
+router.get('/orders/:bName', requireSignIn, getOrdersController)
+
+
 
 router.get('/AllOrders', requireSignIn,isAdmin, getAllOrdersController)
 

@@ -25,13 +25,16 @@ var gateway = new braintree.BraintreeGateway({
         const {name , tel , adr , cart,total} = req.body;
         
        
-        const productDetails = cart?.map((prod) => {
-            return prod?.details?.map((d)=>{
-                return { name : prod.name ,  color : d.color, size :  d.size}
-            })
-            }).flat();
+        const productDetails = cart.flatMap((prod) =>
+            prod?.details.map((d) => ({
+              name: prod.name,
+              color: d.color,
+              size: d.size,
+              photo: prod.photo, 
+            }))
+          );
        
-
+            console.log(productDetails)
         const passagerOrder = await orderModel.create({
             products : productDetails,
             payment : total,

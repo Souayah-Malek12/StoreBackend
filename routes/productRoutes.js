@@ -2,6 +2,7 @@ const express = require("express");
 const { requireSignIn, isAdmin } = require("../middlewares/authMiddleware");
 const { createProductController, getAllProductsController, getSingleProductApi, deleteProductController, updateProductController, filterProductController, productCountController, productListController, searchProductController, relatedSearchController, 
     getProductByCategory, braintreeTokenController, braintreePaymentController, payOnDelivery, passagerCommand } = require("../controllers/productController");
+const { treatOrderController } = require("../controllers/orderController");
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.post('/passagerCommand', passagerCommand)
 router.get("/getOneproduct/:slug",  getSingleProductApi)
 router.delete('/delete/:id', requireSignIn, isAdmin, deleteProductController )
 router.put('/updateProduct/:id' , requireSignIn, isAdmin, updateProductController)
+
+router.put('/treatOrder', requireSignIn,  treatOrderController)
+
 
 module.exports = router;

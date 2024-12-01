@@ -11,6 +11,9 @@ const orderSchema = new mongoose.Schema({
         },
         size : {
             type: String
+        },
+        photo : {
+            type: String
         }
        
     }],
@@ -31,7 +34,7 @@ const orderSchema = new mongoose.Schema({
     status : {
         type: String,
         default : "Not Process",
-        enum : ["Not Process", "Proccessing" , "Shipped", "Delivered", "Cancelled"]
+        enum : ["Not Process", "Proccessing" , "treated", "Delivered", "Cancelled"]
     }
 }, {timestamps: true})
 

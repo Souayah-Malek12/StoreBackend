@@ -4,15 +4,16 @@ const  orderModel = require("../models/orderModel");
 
 const getOrdersController = async(req, res)=>{
     try{
-        const orders = await orderModel.find({ buyer: req.user.id}).populate("buyer").populate("products" );
-
+        const {bName} = req.params;
+        console.log(bName)
+        const orders = await orderModel.find({ buyer: bName}).populate("buyer").populate("products" );
+        console.log(orders)
         if(!orders || orders.length === 0 ){
             return res.status(404).send({
                 success : false,
                 message : "You Didin't have any order already"
             })
         }
-
         const totalAmount = orders.reduce((acc, order) => acc + order.payment, 0);
         const totalCount = orders.length;
 
@@ -24,7 +25,6 @@ const getOrdersController = async(req, res)=>{
                 totalAmount,
                 totalCount
             }
-
         }) 
     }catch(error){
         return res.status(500).json({
@@ -69,4 +69,24 @@ const getAllOrdersController = async(req, res)=>{
     }
 }
 
-module.exports = {getOrdersController, getAllOrdersController};
+const treatOrderController =async(req, res)=>{
+    try{
+        const {id} = req.body;
+        const Ord = await orderModel.findById(id);
+        Ord.status = "treated";
+        Ord.save()
+        return res.status(200).send({
+            success: true,
+            message : "order treated successfully",
+            Ord
+    })
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: "Error in treatOrderController Api",
+            error: err.message,
+          });
+    }
+} 
+
+module.exports = {getOrdersController, getAllOrdersController, treatOrderController};
