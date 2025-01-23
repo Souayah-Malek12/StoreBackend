@@ -12,21 +12,15 @@ dotenv.config()
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from your frontend running on this origin
-    credentials: true // Allow credentials (for cookies, sessions, etc.)
+    origin: 'http://localhost:5173', //  requests from your frontend 
+    credentials: true 
 }));
 
 app.use(express.json())
 
 
-const PORT = process.env.PORT
-app.listen(PORT ,
-    ()=>console.log(`Server running on port ${PORT}`)   
-)
 
-connectDB();
 
-    
 
 app.get('/', (req, res)=> {
     res.send('API is running');
@@ -39,3 +33,16 @@ app.use('/api/v1/category', categoryRoutes )
 
 // 
 app.use('/api/v1/product', require('./routes/productRoutes'))
+
+
+const PORT = process.env.PORT
+
+connectDB().then(() => {
+    app.listen(PORT ,
+        ()=>console.log(`Server running on port ${PORT}`)   
+    )    
+}).catch((err) => {
+    console.log(err);
+});
+
+console.log("bonjour");

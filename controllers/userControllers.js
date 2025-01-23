@@ -230,7 +230,7 @@ const getUsers = async (req, res) => {
       return res.status(500).send({
         success: false,
         message: "Error in getting users list API",
-        error: err.message,  // Use err.message for a detailed error message
+        error: err.message,  
       });
     }
   };

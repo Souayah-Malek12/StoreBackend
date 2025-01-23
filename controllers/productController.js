@@ -134,7 +134,6 @@ const createProductController = async (req, res) => {
         console.log("Request body:", req.body);
 
 
-        // Validate required fields
         if (!name) {
             return res.status(401).send({
                 success: false,
@@ -166,7 +165,6 @@ const createProductController = async (req, res) => {
             });
         }
 
-        // Check if the photo is uploaded and its size
         if (!photo ) {
             return res.status(401).send({
                 success: false,
@@ -180,7 +178,7 @@ const createProductController = async (req, res) => {
             });
         }
            
-        const slug = slugify(name); // Ensure slugify is imported at the top of your file
+        const slug = slugify(name); 
 
         // Create new product
         const product = await productModel.create({
@@ -188,9 +186,7 @@ const createProductController = async (req, res) => {
             slug,
         });
 
-        // Save product to the database
-
-        // Respond with success message
+        
         return res.status(201).send({
             success: true,
             message: "Product created successfully",
@@ -211,7 +207,7 @@ const createProductController = async (req, res) => {
         return res.status(500).send({
             success: false,
             message: "Error in create product API",
-            error: error.message // Return error message for better debugging
+            error: error.message 
         });
        
     }
@@ -417,7 +413,7 @@ const relatedSearchController = async (req, res) => {
             relatedProds
         });
     } catch (error) {
-        console.error("Error fetching related products:", error); // Log the full error
+        console.error("Error fetching related products:", error); 
         return res.status(500).send({
             success: false,
             message: "Error in searching related products API",
