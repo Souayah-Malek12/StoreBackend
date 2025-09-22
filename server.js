@@ -11,9 +11,25 @@ const categoryRoutes = require("./routes/categoryRoutes")
 dotenv.config()
 const app = express();
 
+// CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  'https://souayah-malek12.github.io', // GitHub Pages URL
+  'https://souayah-malek12.github.io/StoreFrontend' // Project site URL
+];
+
 app.use(cors({
-    origin: 'http://localhost:5173', //  requests from your frontend 
-    credentials: true 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
 
 app.use(express.json())
