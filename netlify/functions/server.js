@@ -45,10 +45,14 @@ app.get('/', (req, res) => {
 });
 
 // Import and use your routes
-app.use('/api/v1/auth', require('../../routes/userRoutes'));
-app.use('/api/v1/category', require('../../routes/categoryRoutes'));
-app.use('/api/v1/product', require('../../routes/productRoutes'));
-app.use('/api/v1/orders', require('../../routes/orderRoutes'));
+const path = require('path');
+
+// Use absolute paths for imports
+const routesPath = path.join(__dirname, '..', '..', 'routes');
+app.use('/api/v1/auth', require(path.join(routesPath, 'userRoutes')));
+app.use('/api/v1/category', require(path.join(routesPath, 'categoryRoutes')));
+app.use('/api/v1/product', require(path.join(routesPath, 'productRoutes')));
+app.use('/api/v1/orders', require(path.join(routesPath, 'orderRoutes')));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
