@@ -14,26 +14,38 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
-  'http://localhost:5173', // Local development
-  'https://souayah-malek12.github.io', // GitHub Pages URL
-  'https://souayah-malek12.github.io/StoreFrontend' // Project site URL
+  'http://localhost:5173',
+  'https://souayah-malek12.github.io',
+  'https://souayah-malek12.github.io/StoreFrontend',
+  'https://leafy-maamoul-81be03.netlify.app'
 ];
 
 // Enable CORS for all routes
 app.use((req, res, next) => {
   const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '');
-  if (allowedOrigins.some(allowedOrigin => origin?.includes(allowedOrigin.replace(/https?:\/\//, '').replace(/\/$/, '')))) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
   
-  // Handle preflight requests
+  // Always allow the request origin if it's in allowedOrigins
+  if (origin && allowedOrigins.some(allowedOrigin => 
+    origin.includes(allowedOrigin.replace(/https?:\/\//, '').replace(/\/$/, ''))
+  )) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
+  // For preflight requests
   if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Vary', 'Origin');
     return res.status(200).end();
   }
+  
+  // For actual requests
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Vary', 'Origin');
+  
   next();
 });
 
